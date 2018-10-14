@@ -1,0 +1,63 @@
+Sub Button1_Click()
+   Dim wsh As Worksheet
+   Dim j As Double
+   Dim total_amount As Double
+   Dim final_amount As Double
+   Dim summary_row As Integer
+   Dim summary_newsh As Integer
+   Dim ticker As String
+   Dim Basebook As Workbook
+   Dim Newsh As Worksheet
+   Dim Summary_ticker() As String
+   Dim Summary_amount() As Double
+   final_amount = 0
+   total_amount = 0
+   Dim lastRow As Double
+   Dim Summary_per_sticker As Double
+   summary_row = 1
+   summary_newsh = 1
+   Set Basebook = ThisWorkbook
+   Set Newsh = Basebook.Worksheets.Add
+   Newsh.Name = "Summary-Sheet"
+  For Each wsh In Worksheets
+        If wsh.Name <> Newsh.Name And wsh.Visible Then
+            lastRow = wsh.Cells(Rows.Count, "A").End(xlUp).Row
+            For j = 2 To lastRow
+                If wsh.Cells(j + 1, 1).Value <> wsh.Cells(j, 1).Value Then
+                    total_amount = total_amount + wsh.Cells(j, 7).Value
+                    ticker = wsh.Cells(j, 1).Value
+                    final_amount = total_amount
+                    total_amount = 0
+                    summary_row = summary_row + 1
+                    Newsh.Cells(summary_newsh, 1) = ticker
+                    Newsh.Cells(summary_newsh, 2) = final_amount
+                    summary_newsh = summary_newsh + 1
+                Else
+                    total_amount = total_amount + wsh.Cells(j, 7).Value
+                End If
+            Next j
+        End If
+        summary_newsh = summary_newsh + 1
+        summary_row = 0
+    Next
+    lastRow = Newsh.Cells(Rows.Count, "A").End(xlUp).Row
+    Dim sum_value As Double
+    sum_value = 0
+    Newsh.Cells(1, 5).Value = "Ticker"
+    Newsh.Cells(1, 6).Value = "Sum Volume"
+    Dim Flag_done As String
+    Flag = "Y"
+    For i = 1 To lastRow
+      ticker = Newsh.Cells(i, 1)
+      For j = 1 To lastRow
+        If Newsh.Cells(j, 1) = ticker Then
+          sum_value = sum_value + Newsh.Cells(j, 2)
+        End If
+      Next j
+      Newsh.Cells(i + 1, 5) = ticker
+      Newsh.Cells(i + 1, 6) = sum_value
+      sum_value = 0
+    Next i
+    Newsh.Columns(1).ClearContents
+    Newsh.Columns(2).ClearContents
+End Sub
